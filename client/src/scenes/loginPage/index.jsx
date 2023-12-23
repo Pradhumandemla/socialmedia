@@ -4,6 +4,7 @@ import Form from "./Form";
 const LoginPage = () => {
   const theme = useTheme();
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
+  console.log(process.env.REACT_APP_BACKEND);
   return (
     <Box>
       <Box
