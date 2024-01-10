@@ -6,9 +6,18 @@ import {
   useMediaQuery,
   Typography,
   useTheme,
+  Alert,
+  AlertTitle,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  FormControl,
+  FormLabel
 } from "@mui/material";
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import { Formik } from "formik";
+import { Field, Formik } from "formik";
 import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -24,6 +33,8 @@ const registerSchema = yup.object().shape({
   location: yup.string().required("required"),
   occupation: yup.string().required("required"),
   picture: yup.string().required("required"),
+  gender: yup.string().required("required"),
+  dateOfBirth: yup.string().required("required"),
 });
 
 const loginSchema = yup.object().shape({
@@ -39,6 +50,8 @@ const initialValuesRegister = {
   location: "",
   occupation: "",
   picture: "",
+  gender: "",
+  dateOfBirth: "",
 };
 
 const initialValuesLogin = {
@@ -47,7 +60,8 @@ const initialValuesLogin = {
 };
 
 const Form = () => {
-  const [pageType, setPageType] = useState("login");
+  const [pageType, setPageType] = useState("register");
+  const [isError, setIsError] = useState(true);
   const { palette } = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -79,21 +93,25 @@ const Form = () => {
   };
 
   const login = async (values, onSubmitProps) => {
-    const loggedInResponse = await fetch(process.env.REACT_APP_BACKEND+"/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(values),
-    });
-    const loggedIn = await loggedInResponse.json();
-    onSubmitProps.resetForm();
-    if (loggedIn) {
-      dispatch(
-        setLogin({
-          user: loggedIn.user,
-          token: loggedIn.token,
-        })
-      );
-      navigate("/home");
+    try {      
+      const loggedInResponse = await fetch(process.env.REACT_APP_BACKEND+"/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+      const loggedIn = await loggedInResponse.json();
+      onSubmitProps.resetForm();
+      if (loggedIn) {
+        dispatch(
+          setLogin({
+            user: loggedIn.user,
+            token: loggedIn.token,
+          })
+        );
+        navigate("/home");
+      }
+    } catch (error) {
+      setIsError(true);
     }
   };
 
@@ -101,6 +119,7 @@ const Form = () => {
     if (isLogin) await login(values, onSubmitProps);
     if (isRegister) await register(values, onSubmitProps);
   };
+  const genderOption =[{id:1, name:'Male', value:'male'},{id:2, name: 'Female', value:'female'},{id:3, name: 'Others', value:'other'}]
 
   return (
     <Formik
@@ -189,8 +208,8 @@ const Form = () => {
                     {({ getRootProps, getInputProps }) => (
                       <Box
                         {...getRootProps()}
-                        border={`2px dashed ${palette.primary.main}`}
-                        p="1rem"
+                        // border={`2px dashed ${palette.primary.main}`}
+                        // p="1rem"
                         sx={{ "&:hover": { cursor: "pointer" } }}
                       >
                         <input {...getInputProps()} />
@@ -206,6 +225,44 @@ const Form = () => {
                     )}
                   </Dropzone>
                 </Box>
+
+                <Field name='gender'>
+                  {({ field }) => (
+                    <FormControl
+                      sx={{ gridColumn: "span 4" }}>
+                      <FormLabel id="demo-controlled-radio-buttons-group" sx={{ marginLeft: "10px" }}>Gender</FormLabel>
+                      <RadioGroup
+                        row
+                        aria-labelledby="demo-row-radio-buttons-group-label"
+                        name="row-radio-buttons-group"
+                        sx={{ gridColumn: "span 4" }}
+                        label="Radio"
+                      >
+                        {genderOption.map((ele,index)=>(
+                          <FormControlLabel key={index} name="gender" {...field} control={<Radio />} label={ele.name} value={ele.value} checked={field.value === ele.value} sx={{ marginX: "15px" }} />
+                        ))}
+                        {/* <FormControlLabel name="gender" {...field} control={<Radio />} label="Male" value="male" checked={field.value === 'male'} sx={{ marginX: "15px" }} />
+                        <FormControlLabel name="gender" {...field} control={<Radio />} label="Female" value="female" checked={field.value === 'female'} sx={{ marginX: "15px" }} />
+                        <FormControlLabel name="gender" {...field} control={<Radio />} label="Others" value="others" checked={field.value === 'others'} sx={{ marginX: "15px" }} /> */}
+                      </RadioGroup>
+                    </FormControl>
+                  )}
+                </Field>
+                <Field name="dateOfBirth">
+                  {({ field, form }) => {
+                    return(
+                    <LocalizationProvider dateAdapter={AdapterDayjs} >
+                      <DatePicker 
+                      label="Date Of Birth"
+                      sx={{ gridColumn: "span 4" }} 
+                      format="DD/MM/YYYY"
+
+                      onBlur={handleBlur} 
+                      onChange={(date) => form.setFieldValue(field.name, date.$d.toDateString())}
+                      />
+                    </LocalizationProvider>
+                  )}}
+                </Field>
               </>
             )}
 
@@ -233,7 +290,16 @@ const Form = () => {
           </Box>
 
           {/* BUTTONS */}
+          {isError && (
+              <Box sx={{ marginY:'20px' }}>
+                <Alert severity="error">
+                  <AlertTitle>Error</AlertTitle>
+                  This is an error alert — <strong>check it out!</strong>
+                </Alert>
+              </Box>)}
           <Box>
+              <div>{JSON.stringify(values)}</div>
+              <div>{JSON.stringify(errors)}</div>
             <Button
               fullWidth
               type="submit"
