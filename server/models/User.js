@@ -1,55 +1,55 @@
 import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema(
-  {
-    firstName: {
-      type: String,
-      required: true,
-      min: 2,
-      max: 50,
-    },
-    lastName: {
-      type: String,
-      required: true,
-      min: 2,
-      max: 50,
-    },
-    email: {
-      type: String,
-      required: true,
-      max: 50,
-      unique: true,
-    },
-    password: {
-      type: String,
-      required: true,
-      min: 5,
-    },
-    picturePath: {
-      type: String,
-      default: "",
-    },
-    friends: {
-      type: Array,
-      default: [],
-    },
-    gender: {
-      type: String,
-      enum:["Male", "Female"],
-      required:true,
-    },
-    dateOfBirth: {
-      type: Date,
-      required: true,
-      trim: true,
-    },
-    location: String,
-    occupation: String,
-    viewedProfile: Number,
-    impressions: Number,
-  },
-  { timestamps: true }
-);
+// const userSchema = new mongoose.Schema(
+//   {
+//     firstName: {
+//       type: String,
+//       required: true,
+//       min: 2,
+//       max: 50,
+//     },
+//     lastName: {
+//       type: String,
+//       required: true,
+//       min: 2,
+//       max: 50,
+//     },
+//     email: {
+//       type: String,
+//       required: true,
+//       max: 50,
+//       unique: true,
+//     },
+//     password: {
+//       type: String,
+//       required: true,
+//       min: 5,
+//     },
+//     picturePath: {
+//       type: String,
+//       default: "",
+//     },
+//     friends: {
+//       type: Array,
+//       default: [],
+//     },
+//     gender: {
+//       type: String,
+//       enum:["Male", "Female"],
+//       required:true,
+//     },
+//     dateOfBirth: {
+//       type: Date,
+//       required: true,
+//       trim: true,
+//     },
+//     location: String,
+//     occupation: String,
+//     viewedProfile: Number,
+//     impressions: Number,
+//   },
+//   { timestamps: true }
+// );
 
 const UserSchema = new mongoose.Schema({
   firstName: {
@@ -88,7 +88,7 @@ const UserSchema = new mongoose.Schema({
   }],
   gender: {
     type: String,
-    enum:["Male", "Female"],
+    enum:["male", "female"],
     required:true,
   },
   dateOfBirth: {

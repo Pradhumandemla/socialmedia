@@ -8,3 +8,35 @@ body,
   width: 100%;
   font-family: "Rubik", sans-serif;
 }
+
+.slick-list{
+  border-radius:0.75rem ;
+}
+.slick-dots{
+  bottom: -32px;
+}
+.slick-dots li {
+  width: 10px;
+  height: 10px;
+  margin: 0px;
+}
+.slick-dots li button {
+  width: 10px;
+  height: 10px;
+  cursor: initial;
+}
+.slick-dots li button:before {
+  width: 10px;
+  height: 10px;
+  line-height: 0px; 
+  position: initial;
+  cursor: initial;
+}
+.slick-prev{
+  left: 10px !important;  
+  z-index: 1 !important;
+}
+.slick-next{
+  right: 10px !important;  
+  z-index: 1px !important;
+}

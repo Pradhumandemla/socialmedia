@@ -4,25 +4,23 @@ import User from "../models/User.js";
 /* CREATE */
 export const createPost = async (req, res) => {
   try {
-    const { userId, description, picturePath } = req.body;
-    const user = await User.findById(userId);
+    const { userId, description } = req.body;
+    // const user = await User.findById(userId);
+    const images = [];
+    req.files.map(({path,size}) => {images.push({path,size})})
+    
     const newPost = new Post({
       userId,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      gender: user.gender,
-      dateOfBirth: user.location,
-      location: user.location,
       description,
-      userPicturePath: user.picturePath,
-      picturePath,
-      likes: {},
+      images,
+      likes: [],
       comments: [],
     });
     await newPost.save();
-
-    const post = await Post.find();
-    res.status(201).json(post);
+    res.status(201).json(newPost);
+    // const post = await Post.find();
+    // res.status(201).json(post);
+    
   } catch (err) {
     res.status(409).json({ message: err.message });
   }
@@ -31,7 +29,10 @@ export const createPost = async (req, res) => {
 /* READ */
 export const getFeedPosts = async (req, res) => {
   try {
-    const post = await Post.find();
+    const post = await Post.find().populate({
+      path : 'userId', 
+      select :['firstName', 'lastName', 'profilePicture', 'location']
+    });
     res.status(200).json(post);
   } catch (err) {
     res.status(404).json({ message: err.message });
@@ -41,7 +42,10 @@ export const getFeedPosts = async (req, res) => {
 export const getUserPosts = async (req, res) => {
   try {
     const { userId } = req.params;
-    const post = await Post.find({ userId });
+    const post = await Post.find({ userId }).populate({
+      path : 'userId', 
+      select :['firstName', 'lastName', 'profilePicture', 'location']
+    });
     res.status(200).json(post);
   } catch (err) {
     res.status(404).json({ message: err.message });
